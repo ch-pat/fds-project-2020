@@ -17,10 +17,12 @@ data.drop(['Flight Distance','Departure/Arrival time convenient','Gate location'
 
 # Encode qualitative columns
 Y = data.pop("satisfaction")
-# TODO: sistema 'sta cosa
-# Y['satisfaction'] = Y['satisfaction'].map({'satisfied': 1,'dissatisfied': 0})
 
-
+for i, v in Y.iteritems():
+    if Y[i] == "satisfied":
+        Y[i] = 1
+    else:
+        Y[i] = 0
 
 ct = ColumnTransformer([('encoder', OneHotEncoder(), [0, 1, 3, 4])], remainder='passthrough')
 data = np.array(ct.fit_transform(data), dtype=np.float)
