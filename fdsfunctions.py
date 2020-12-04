@@ -20,7 +20,7 @@ def log_likelihood(theta, x, y):
 
 def grad_l(theta, x, y):
     # return the gradient G of the log likelihood
-    m = x.shape[0]
+    #m = x.shape[0]
     h = sigmoid(np.dot(x, theta))
     G = np.dot(np.transpose(x), y - h)
     return G
