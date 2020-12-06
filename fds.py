@@ -64,5 +64,8 @@ for i in range(X_test.shape[0]):
         prediction = 1
     if prediction == Y_test[i]:
         correct_predictions += 1
+
+predictions = X_test.dot(theta_final)
+fds.plot_rpc(predictions, Y_test)
     
 print(f"\nNumber of correct predictions: {correct_predictions}, total predictions: {X_test.shape[0]}, accuracy: {correct_predictions / X_test.shape[0]}")

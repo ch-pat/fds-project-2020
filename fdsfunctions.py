@@ -48,3 +48,34 @@ def rescale(data: np.array):
         column = data[:, i]
         column = (column - column.min()) / (column.max() - column.min())
         data[:, i] = column
+
+def plot_rpc(predictions, labels):
+    recall = []
+    precision = []
+
+    sortidx = predictions.argsort()
+    p = predictions[sortidx]
+    l = labels[sortidx]
+
+    tp = 0
+    tn = len(p) - len(np.where(l == 1)[0])
+    fp = 0
+    fn = len(p) - tn
+    with open("out.txt", "w+") as f:
+        for i in range(len(predictions)):
+            tp += l[i]
+            if l[i] == 0: # TODO: label sono esattamente al contrario
+                tn -= 1
+                fp += 1
+            else:
+                fn -= 1
+            f.writelines(f"tp={tp}, fp={fp}, tn={tn}, fn={fn}, precision={tp / (tp + fp)}, recall = {tp / (tp + fn)}, threshold={p[i]}\n")
+            #Compute precision and recall values and append them to "recall" and "precision" vectors
+            precision += [tp / (tp + fp)] 
+            recall += [tp / (tp + fn)]
+        
+    plt.plot([1-precision[i] for i in range(len(precision))], recall)
+    plt.axis([0, 1, 0, 1])
+    plt.xlabel('1 - precision')
+    plt.ylabel('recall')
+    plt.show()
