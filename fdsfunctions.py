@@ -39,3 +39,12 @@ def gradient_ascent(theta, x, y, G, alpha=0.01, iterations=100):
         theta_history[i] = theta
         log_l_history[i] = log_likelihood(theta, x, y)
     return theta, log_l_history, theta_history
+
+def rescale(data: np.array):
+    """
+    Rescales data into [0, 1] range
+    """
+    for i in range(data.shape[1]):
+        column = data[:, i]
+        column = (column - column.min()) / (column.max() - column.min())
+        data[:, i] = column
