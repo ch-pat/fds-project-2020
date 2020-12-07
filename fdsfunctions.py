@@ -57,25 +57,55 @@ def plot_rpc(predictions, labels):
     p = predictions[sortidx]
     l = labels[sortidx]
 
-    tp = 0
-    tn = len(p) - len(np.where(l == 1)[0])
-    fp = 0
-    fn = len(p) - tn
-    with open("out.txt", "w+") as f:
-        for i in range(len(predictions)):
-            tp += l[i]
-            if l[i] == 0: # TODO: label sono esattamente al contrario
-                tn -= 1
-                fp += 1
-            else:
-                fn -= 1
-            f.writelines(f"tp={tp}, fp={fp}, tn={tn}, fn={fn}, precision={tp / (tp + fp)}, recall = {tp / (tp + fn)}, threshold={p[i]}\n")
-            #Compute precision and recall values and append them to "recall" and "precision" vectors
-            precision += [tp / (tp + fp)] 
-            recall += [tp / (tp + fn)]
+    tn = 0
+    fn = 0
+    tp = len(p) - len(np.where(l == 0)[0])
+    fp = len(p) - tp
+    for i in range(len(predictions)):
+        if l[i] == 1: # TODO: label sono esattamente al contrario
+            tp -= 1
+            fn += 1
+        else:
+            tn += 1
+            fp -= 1
+
+        #Compute precision and recall values and append them to "recall" and "precision" vectors
+        if tp + fp != 0:
+            precision += [tp / (tp + fp)]
+        else: 
+            precision += [1.0]
+        recall += [tp / (tp + fn)]
         
     plt.plot([1-precision[i] for i in range(len(precision))], recall)
     plt.axis([0, 1, 0, 1])
     plt.xlabel('1 - precision')
     plt.ylabel('recall')
     plt.show()
+
+def hess_l(theta, x, y):
+    # return the Hessian matrix hess
+    n = len(theta)
+    m = len(x)
+    h = sigmoid(np.dot(x, theta))
+    hess = np.dot(np.dot(x.T, np.diag(h * (h - 1))), x) / m
+    return hess
+
+def newton(theta0, x, y, G, H, eps):
+    # return the optimized theta parameters,
+    # as well as two lists containing the log likelihood's and values of theta at all iterations
+    cur_theta = theta0
+    next_theta = None
+    theta_history = []
+    log_l_history = []
+    for i in range(1000):
+        hess = H(cur_theta, x, y)
+        grad = G(cur_theta, x, y) / len(x)
+        next_theta = cur_theta - np.linalg.inv(hess).dot(grad)
+        theta_history.append(cur_theta)
+        log_l_history.append(log_likelihood(cur_theta, x, y))
+        cur_theta = next_theta
+        if abs(np.linalg.norm(grad)) < eps:
+            break
+
+    theta = next_theta
+    return theta, theta_history, log_l_history
