@@ -62,7 +62,7 @@ def plot_rpc(predictions, labels):
     tp = len(p) - len(np.where(l == 0)[0])
     fp = len(p) - tp
     for i in range(len(predictions)):
-        if l[i] == 1: # TODO: label sono esattamente al contrario
+        if l[i] == 1:
             tp -= 1
             fn += 1
         else:
@@ -86,7 +86,7 @@ def hess_l(theta, x, y):
     # return the Hessian matrix hess
     m = len(x)
     h = sigmoid(np.dot(x, theta))
-    hess = np.dot(np.dot(x.T, np.diag(h * (h - 1))), x) #  /m
+    hess = np.dot(np.dot(x.T, np.diag(h * (h - 1))), x) # / m
     return hess
 
 def newton(theta0, x, y, G, H, eps):

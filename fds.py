@@ -37,14 +37,13 @@ fds.rescale(data)
 ones = np.ones((data.shape[0], 1))
 data = np.append(ones, data, axis=1)
 
-X_train, X_test, Y_train, Y_test = train_test_split(data, Y, train_size=0.03, random_state=1)
-Y_train = np.array(Y_train, dtype=np.float32)
-Y_test = np.array(Y_test, dtype=np.float32)
-
-
 ###### Run Gradient Ascent method ######
 
-if False:
+if True:
+    X_train, X_test, Y_train, Y_test = train_test_split(data, Y, train_size=0.7, random_state=1)
+    Y_train = np.array(Y_train, dtype=np.float32)
+    Y_test = np.array(Y_test, dtype=np.float32)
+
     theta0 = np.zeros(X_train.shape[1])
     n_iter=1000
 
@@ -75,31 +74,40 @@ if False:
 
 
 ###### Run Newton method ######
-# TODO: accertarsi che la hessian matrix è troppo grossa, aggiungere al report questa cosa fighissima se è vero
-theta0 = np.zeros(X_train.shape[1])
-n_iter=1000
 
-theta_final, theta_history, log_l_history = fds.newton(theta0, X_train, Y_train, fds.grad_l, fds.hess_l, 1e-6)
+# Train size needs to be small, otherwise matrix calculations take too long
+# also tends to create singular matrices, but this split works
+if True:
+    X_train, X_test, Y_train, Y_test = train_test_split(data, Y, train_size=0.01, random_state=1)
+    Y_train = np.array(Y_train, dtype=np.float32)
+    Y_test = np.array(Y_test, dtype=np.float32)
 
-fig, ax = plt.subplots(num=2)
+    theta0 = np.zeros(X_train.shape[1])
+    n_iter=1000
 
-ax.set_ylabel('l(Theta)')
-ax.set_xlabel('Iterations')
-_=ax.plot(range(len(log_l_history)),log_l_history,'b.')
-plt.show()
+    theta_final, theta_history, log_l_history = fds.newton(theta0, X_train, Y_train, fds.grad_l, fds.hess_l, 1e-6)
 
-correct_predictions = 0
-for i in range(X_test.shape[0]):
-    prediction = theta_final.T.dot(X_test[i, :])
-    if prediction < 0.5:
-        prediction = 0
-    else:
-        prediction = 1
-    if prediction == Y_test[i]:
-        correct_predictions += 1
+    fig, ax = plt.subplots(num=2)
 
-predictions = X_test.dot(theta_final)
-fds.plot_rpc(predictions, Y_test)
+    ax.set_ylabel('l(Theta)')
+    ax.set_xlabel('Iterations')
+    _=ax.plot(range(len(log_l_history)),log_l_history,'b.')
+    plt.show()
 
-print("Newton Method Results:")    
-print(f"\nNumber of correct predictions: {correct_predictions}, total predictions: {X_test.shape[0]}, accuracy: {correct_predictions / X_test.shape[0]}")
+    correct_predictions = 0
+    for i in range(X_test.shape[0]):
+        prediction = theta_final.T.dot(X_test[i, :])
+        if prediction < 0.5:
+            prediction = 0
+        else:
+            prediction = 1
+        if prediction == Y_test[i]:
+            correct_predictions += 1
+
+    predictions = X_test.dot(theta_final)
+    fds.plot_rpc(predictions, Y_test)
+
+    print("Newton Method Results:")    
+    print(f"\nNumber of correct predictions: {correct_predictions}, total predictions: {X_test.shape[0]}, accuracy: {correct_predictions / X_test.shape[0]}")
+
+###### Run Gaussian Discriminant Analysis method ######
