@@ -84,10 +84,9 @@ def plot_rpc(predictions, labels):
 
 def hess_l(theta, x, y):
     # return the Hessian matrix hess
-    n = len(theta)
     m = len(x)
     h = sigmoid(np.dot(x, theta))
-    hess = np.dot(np.dot(x.T, np.diag(h * (h - 1))), x) / m
+    hess = np.dot(np.dot(x.T, np.diag(h * (h - 1))), x) #  /m
     return hess
 
 def newton(theta0, x, y, G, H, eps):

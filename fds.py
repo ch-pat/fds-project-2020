@@ -37,40 +37,41 @@ fds.rescale(data)
 ones = np.ones((data.shape[0], 1))
 data = np.append(ones, data, axis=1)
 
-X_train, X_test, Y_train, Y_test = train_test_split(data, Y, train_size=0.7, random_state=1)
+X_train, X_test, Y_train, Y_test = train_test_split(data, Y, train_size=0.03, random_state=1)
 Y_train = np.array(Y_train, dtype=np.float32)
 Y_test = np.array(Y_test, dtype=np.float32)
 
 
 ###### Run Gradient Ascent method ######
 
-theta0 = np.zeros(X_train.shape[1])
-n_iter=1000
+if False:
+    theta0 = np.zeros(X_train.shape[1])
+    n_iter=1000
 
-theta_final, log_l_history, theta_history = fds.gradient_ascent(theta0, X_train, Y_train, fds.grad_l, alpha=0.3, iterations=n_iter)
+    theta_final, log_l_history, theta_history = fds.gradient_ascent(theta0, X_train, Y_train, fds.grad_l, alpha=0.3, iterations=n_iter)
 
-fig, ax = plt.subplots(num=2)
+    fig, ax = plt.subplots(num=2)
 
-ax.set_ylabel('l(Theta)')
-ax.set_xlabel('Iterations')
-_=ax.plot(range(len(log_l_history)),log_l_history,'b.')
-plt.show()
+    ax.set_ylabel('l(Theta)')
+    ax.set_xlabel('Iterations')
+    _=ax.plot(range(len(log_l_history)),log_l_history,'b.')
+    plt.show()
 
-correct_predictions = 0
-for i in range(X_test.shape[0]):
-    prediction = theta_final.T.dot(X_test[i, :])
-    if prediction < 0.5:
-        prediction = 0
-    else:
-        prediction = 1
-    if prediction == Y_test[i]:
-        correct_predictions += 1
+    correct_predictions = 0
+    for i in range(X_test.shape[0]):
+        prediction = theta_final.T.dot(X_test[i, :])
+        if prediction < 0.5:
+            prediction = 0
+        else:
+            prediction = 1
+        if prediction == Y_test[i]:
+            correct_predictions += 1
 
-predictions = X_test.dot(theta_final)
-fds.plot_rpc(predictions, Y_test)
+    predictions = X_test.dot(theta_final)
+    fds.plot_rpc(predictions, Y_test)
 
-print("Gradient Ascent Results:")    
-print(f"\nNumber of correct predictions: {correct_predictions}, total predictions: {X_test.shape[0]}, accuracy: {correct_predictions / X_test.shape[0]}")
+    print("Gradient Ascent Results:")    
+    print(f"\nNumber of correct predictions: {correct_predictions}, total predictions: {X_test.shape[0]}, accuracy: {correct_predictions / X_test.shape[0]}")
 
 
 ###### Run Newton method ######
