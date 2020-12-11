@@ -9,6 +9,7 @@ import seaborn as sns
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.compose import ColumnTransformer
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 
 headers = ["satisfaction","Gender","Customer Type","Age","Type of Travel","Class","Flight Distance","Seat comfort","Departure/Arrival time convenient","Food and drink","Gate location","Inflight wifi service","Inflight entertainment","Online support","Ease of Online booking","On-board service","Leg room service","Baggage handling","Checkin service","Cleanliness","Online boarding","Departure Delay in Minutes","Arrival Delay in Minutes"]
 data = pd.read_csv("./Invistico_Airline.csv", names=headers, header=0, engine='python')
@@ -59,7 +60,7 @@ if True:
     correct_predictions = 0
     for i in range(X_test.shape[0]):
         prediction = theta_final.T.dot(X_test[i, :])
-        if prediction < 0.5:
+        if prediction < 0:
             prediction = 0
         else:
             prediction = 1
@@ -97,7 +98,7 @@ if True:
     correct_predictions = 0
     for i in range(X_test.shape[0]):
         prediction = theta_final.T.dot(X_test[i, :])
-        if prediction < 0.5:
+        if prediction < 0:
             prediction = 0
         else:
             prediction = 1
@@ -111,3 +112,23 @@ if True:
     print(f"\nNumber of correct predictions: {correct_predictions}, total predictions: {X_test.shape[0]}, accuracy: {correct_predictions / X_test.shape[0]}")
 
 ###### Run Gaussian Discriminant Analysis method ######
+
+if True:
+    X_train, X_test, Y_train, Y_test = train_test_split(data, Y, train_size=0.5, random_state=1)
+    Y_train = np.array(Y_train, dtype=np.float32)
+    Y_test = np.array(Y_test, dtype=np.float32)
+
+    predictor = LinearDiscriminantAnalysis()
+    predictor.fit(X_train, Y_train)
+    predictions = predictor.predict(X_test)
+    correct_predictions = 0
+    for i in range(len(predictions)):
+        if predictions[i] == Y_test[i]:
+            correct_predictions += 1
+
+    fds.plot_rpc(predictions, Y_test)
+
+    print("Gaussian Discriminant Analysis Results:")    
+    print(f"\nNumber of correct predictions: {correct_predictions}, total predictions: {X_test.shape[0]}, accuracy: {correct_predictions / X_test.shape[0]}")
+
+# TODO: aggiungere comparison tra i grafici delle curve roc e altro di interessante che ci viene in mente
