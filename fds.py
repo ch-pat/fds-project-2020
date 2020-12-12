@@ -39,8 +39,7 @@ ones = np.ones((data.shape[0], 1))
 data = np.append(ones, data, axis=1)
 
 ###### Run Gradient Ascent method ######
-
-if True:
+def Gradient_Ascent(data):
     X_train, X_test, Y_train, Y_test = train_test_split(data, Y, train_size=0.7, random_state=1)
     Y_train = np.array(Y_train, dtype=np.float32)
     Y_test = np.array(Y_test, dtype=np.float32)
@@ -68,17 +67,19 @@ if True:
             correct_predictions += 1
 
     predictions = X_test.dot(theta_final)
-    fds.plot_rpc(predictions, Y_test)
+    fds.plot_rpc(predictions, Y_test, True)
 
     print("Gradient Ascent Results:")    
-    print(f"\nNumber of correct predictions: {correct_predictions}, total predictions: {X_test.shape[0]}, accuracy: {correct_predictions / X_test.shape[0]}")
+    print(f"Number of correct predictions: {correct_predictions}, total predictions: {X_test.shape[0]}, accuracy: {correct_predictions / X_test.shape[0]}")
+    return predictions, Y_test
+
+GA_predictions, GA_Y_test = Gradient_Ascent(data)
 
 
 ###### Run Newton method ######
-
-# Train size needs to be small, otherwise matrix calculations take too long
-# also tends to create singular matrices, but this split works
-if True:
+def Newton(data):
+    # Train size needs to be small, otherwise matrix calculations take too long
+    # also tends to create singular matrices, but this split works
     X_train, X_test, Y_train, Y_test = train_test_split(data, Y, train_size=0.01, random_state=1)
     Y_train = np.array(Y_train, dtype=np.float32)
     Y_test = np.array(Y_test, dtype=np.float32)
@@ -106,15 +107,18 @@ if True:
             correct_predictions += 1
 
     predictions = X_test.dot(theta_final)
-    fds.plot_rpc(predictions, Y_test)
+    fds.plot_rpc(predictions, Y_test, True)
 
     print("Newton Method Results:")    
-    print(f"\nNumber of correct predictions: {correct_predictions}, total predictions: {X_test.shape[0]}, accuracy: {correct_predictions / X_test.shape[0]}")
+    print(f"Number of correct predictions: {correct_predictions}, total predictions: {X_test.shape[0]}, accuracy: {correct_predictions / X_test.shape[0]}")
+    return predictions, Y_test
+
+Newton_predictions, Newton_Y_test = Newton(data)
+
 
 ###### Run Gaussian Discriminant Analysis method ######
-
-if True:
-    X_train, X_test, Y_train, Y_test = train_test_split(data, Y, train_size=0.5, random_state=1)
+def GDA(data):
+    X_train, X_test, Y_train, Y_test = train_test_split(data, Y, train_size=0.7, random_state=1)
     Y_train = np.array(Y_train, dtype=np.float32)
     Y_test = np.array(Y_test, dtype=np.float32)
 
@@ -126,9 +130,18 @@ if True:
         if predictions[i] == Y_test[i]:
             correct_predictions += 1
 
-    fds.plot_rpc(predictions, Y_test)
+    fds.plot_rpc(predictions, Y_test, True)
 
     print("Gaussian Discriminant Analysis Results:")    
-    print(f"\nNumber of correct predictions: {correct_predictions}, total predictions: {X_test.shape[0]}, accuracy: {correct_predictions / X_test.shape[0]}")
+    print(f"Number of correct predictions: {correct_predictions}, total predictions: {X_test.shape[0]}, accuracy: {correct_predictions / X_test.shape[0]}")
+    return predictions, Y_test
+
+GDA_predictions, GDA_Y_test = GDA(data)
 
 # TODO: aggiungere comparison tra i grafici delle curve roc e altro di interessante che ci viene in mente
+# 1. mettere i tre grafici sovrapposti
+# 2.        GA | NEWTON | GDA
+# precision
+# recall
+# AUC
+fds.plot_all_rpc([(GA_predictions, GA_Y_test, "GA"), (Newton_predictions, Newton_Y_test, "Newton"), (GDA_predictions, GDA_Y_test, "GDA")])

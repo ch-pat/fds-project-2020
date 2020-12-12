@@ -49,7 +49,7 @@ def rescale(data: np.array):
         column = (column - column.min()) / (column.max() - column.min())
         data[:, i] = column
 
-def plot_rpc(predictions, labels):
+def plot_rpc(predictions, labels, plot=False):
     recall = []
     precision = []
 
@@ -75,12 +75,14 @@ def plot_rpc(predictions, labels):
         else: 
             precision += [1.0]
         recall += [tp / (tp + fn)]
-        
-    plt.plot([1-precision[i] for i in range(len(precision))], recall)
-    plt.axis([0, 1, 0, 1])
-    plt.xlabel('1 - precision')
-    plt.ylabel('recall')
-    plt.show()
+    
+    if plot:
+        plt.plot([1-precision[i] for i in range(len(precision))], recall)
+        plt.axis([0, 1, 0, 1])
+        plt.xlabel('1 - precision')
+        plt.ylabel('recall')
+        plt.show()
+    return [1-precision[i] for i in range(len(precision))], recall
 
 def hess_l(theta, x, y):
     # return the Hessian matrix hess
@@ -108,3 +110,16 @@ def newton(theta0, x, y, G, H, eps):
 
     theta = next_theta
     return theta, theta_history, log_l_history
+
+def plot_all_rpc(to_plot: list):
+    colors = ["b", "r", "g"]
+    styles = [":", "--", "-."]
+    for x, y, name in to_plot:
+        precision, recall = plot_rpc(x, y)
+        plt.plot(precision, recall, label=name, linestyle = styles.pop(), color=colors.pop())
+    plt.title("Precision/Recall curves comparison")
+    plt.legend(loc="lower right")
+    plt.axis([0, 1, 0, 1])
+    plt.xlabel('1 - precision')
+    plt.ylabel('recall')
+    plt.show()
