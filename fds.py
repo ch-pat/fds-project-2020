@@ -120,6 +120,12 @@ Newton_predictions, Newton_Y_test = Newton(data)
 
 ###### Run Gaussian Discriminant Analysis method ######
 def GDA(data):
+    # Plot the distribution of all features to check if they're all normally distributed
+    for column_idx in range(data.shape[1]):
+        column = data[:, column_idx]
+        plt.hist(column, alpha=1/5)
+    plt.show()
+
     # Split the dataset into 70% training, 30% testing
     X_train, X_test, Y_train, Y_test = train_test_split(data, Y, train_size=0.7, random_state=1)
     Y_train = np.array(Y_train, dtype=np.float32)
