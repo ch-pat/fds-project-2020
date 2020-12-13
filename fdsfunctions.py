@@ -26,7 +26,6 @@ def grad_l(theta, x, y):
     return G
 
 def gradient_ascent(theta, x, y, G, alpha=0.01, iterations=100):
-
     m = len(y)
     log_l_history = np.zeros(iterations)
     theta_history = np.zeros((iterations, x.shape[1]))
@@ -86,7 +85,7 @@ def plot_rpc(predictions, labels, plot=False):
 
 def hess_l(theta, x, y):
     # return the Hessian matrix hess
-    m = len(x)
+    # m = len(x)
     h = sigmoid(np.dot(x, theta))
     hess = np.dot(np.dot(x.T, np.diag(h * (h - 1))), x) # / m
     return hess
@@ -98,7 +97,7 @@ def newton(theta0, x, y, G, H, eps):
     next_theta = None
     theta_history = []
     log_l_history = []
-    for i in range(1000):
+    for _ in range(1000):
         hess = H(cur_theta, x, y)
         grad = G(cur_theta, x, y) / len(x)
         next_theta = cur_theta - np.linalg.inv(hess).dot(grad)

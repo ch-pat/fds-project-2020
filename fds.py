@@ -40,6 +40,7 @@ data = np.append(ones, data, axis=1)
 
 ###### Run Gradient Ascent method ######
 def Gradient_Ascent(data):
+    # Split the dataset into 70% training, 30% testing
     X_train, X_test, Y_train, Y_test = train_test_split(data, Y, train_size=0.7, random_state=1)
     Y_train = np.array(Y_train, dtype=np.float32)
     Y_test = np.array(Y_test, dtype=np.float32)
@@ -47,15 +48,16 @@ def Gradient_Ascent(data):
     theta0 = np.zeros(X_train.shape[1])
     n_iter=1000
 
-    theta_final, log_l_history, theta_history = fds.gradient_ascent(theta0, X_train, Y_train, fds.grad_l, alpha=0.3, iterations=n_iter)
+    theta_final, log_l_history, _ = fds.gradient_ascent(theta0, X_train, Y_train, fds.grad_l, alpha=0.3, iterations=n_iter)
 
-    fig, ax = plt.subplots(num=2)
+    _, ax = plt.subplots(num=2)
 
     ax.set_ylabel('l(Theta)')
     ax.set_xlabel('Iterations')
-    _=ax.plot(range(len(log_l_history)),log_l_history,'b.')
+    _ = ax.plot(range(len(log_l_history)), log_l_history, 'b.')
     plt.show()
 
+    # Calculate accuracy
     correct_predictions = 0
     for i in range(X_test.shape[0]):
         prediction = theta_final.T.dot(X_test[i, :])
@@ -66,6 +68,7 @@ def Gradient_Ascent(data):
         if prediction == Y_test[i]:
             correct_predictions += 1
 
+    # Obtain predictions using our trained model on testing data
     predictions = X_test.dot(theta_final)
     fds.plot_rpc(predictions, Y_test, True)
 
@@ -74,7 +77,6 @@ def Gradient_Ascent(data):
     return predictions, Y_test
 
 GA_predictions, GA_Y_test = Gradient_Ascent(data)
-
 
 ###### Run Newton method ######
 def Newton(data):
@@ -85,17 +87,17 @@ def Newton(data):
     Y_test = np.array(Y_test, dtype=np.float32)
 
     theta0 = np.zeros(X_train.shape[1])
-    n_iter=1000
 
-    theta_final, theta_history, log_l_history = fds.newton(theta0, X_train, Y_train, fds.grad_l, fds.hess_l, 1e-6)
+    theta_final, _, log_l_history = fds.newton(theta0, X_train, Y_train, fds.grad_l, fds.hess_l, 1e-6)
 
-    fig, ax = plt.subplots(num=2)
+    _, ax = plt.subplots(num=2)
 
     ax.set_ylabel('l(Theta)')
     ax.set_xlabel('Iterations')
-    _=ax.plot(range(len(log_l_history)),log_l_history,'b.')
+    _ = ax.plot(range(len(log_l_history)), log_l_history, 'b.')
     plt.show()
 
+    # Calculate accuracy
     correct_predictions = 0
     for i in range(X_test.shape[0]):
         prediction = theta_final.T.dot(X_test[i, :])
@@ -106,6 +108,7 @@ def Newton(data):
         if prediction == Y_test[i]:
             correct_predictions += 1
 
+    # Obtain predictions using our trained model on testing data
     predictions = X_test.dot(theta_final)
     fds.plot_rpc(predictions, Y_test, True)
 
@@ -115,16 +118,21 @@ def Newton(data):
 
 Newton_predictions, Newton_Y_test = Newton(data)
 
-
 ###### Run Gaussian Discriminant Analysis method ######
 def GDA(data):
+    # Split the dataset into 70% training, 30% testing
     X_train, X_test, Y_train, Y_test = train_test_split(data, Y, train_size=0.7, random_state=1)
     Y_train = np.array(Y_train, dtype=np.float32)
     Y_test = np.array(Y_test, dtype=np.float32)
 
+    # Train model
     predictor = LinearDiscriminantAnalysis()
     predictor.fit(X_train, Y_train)
+    
+    # Obtain predictions using our trained model on testing data
     predictions = predictor.predict(X_test)
+    
+    # Calculate accuracy
     correct_predictions = 0
     for i in range(len(predictions)):
         if predictions[i] == Y_test[i]:
@@ -138,10 +146,4 @@ def GDA(data):
 
 GDA_predictions, GDA_Y_test = GDA(data)
 
-# TODO: aggiungere comparison tra i grafici delle curve roc e altro di interessante che ci viene in mente
-# 1. mettere i tre grafici sovrapposti
-# 2.        GA | NEWTON | GDA
-# precision
-# recall
-# AUC
 fds.plot_all_rpc([(GA_predictions, GA_Y_test, "GA"), (Newton_predictions, Newton_Y_test, "Newton"), (GDA_predictions, GDA_Y_test, "GDA")])
